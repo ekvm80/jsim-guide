@@ -178,7 +178,10 @@ select{font:inherit;font-size:0.9375rem;padding:7px 10px;border-radius:7px;borde
 .item .title a{text-decoration:none}
 .item .title a:hover{text-decoration:underline}
 .item .authors{font-size:0.8125rem;color:var(--muted);margin:3px 0 0}
-.item .acts{display:flex;gap:6px}
+.item .acts{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+/* COinS 메타데이터. 그리드 칸을 차지하지 않도록 감춘다. Zotero는 DOM에서 읽으므로
+   화면에 그려지지 않아도 인식한다. */
+.Z3988{display:none}
 .btn{font:inherit;font-size:0.75rem;padding:5px 10px;border-radius:6px;border:1px solid var(--line);
   background:var(--surface-2);color:var(--muted);cursor:pointer;white-space:nowrap}
 .btn:hover{color:var(--ink);border-color:var(--navy-soft)}
@@ -233,7 +236,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 1p
     <div>
       <div class="eyebrow">Journal of Structural Integrity and Maintenance</div>
       <h1>JSIM 인용 가이드</h1>
-      <p class="sub">JSIM에 실린 논문을 검색하고, 적절한 논문을 인용하기 위한 자료입니다.</p>
+      <p class="sub">JSIM에 실린 논문을 검색하고, Impact Factor에 반영되는 시기에 맞춰 인용하기 위한 자료입니다.</p>
     </div>
     <div class="stats">
       <div class="stat"><b id="stat-total">–</b><span>수록 논문</span></div>
@@ -262,7 +265,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 1p
   <div class="wrap">
     <div class="sec-head">
       <h2>언제, 어느 연도 논문을 인용하는가</h2>
-      <p> </p>
+      <p>Impact Factor는 직전 2년간 발행된 논문이 받은 인용만 집계합니다.</p>
     </div>
     <div class="rulebar">
       <label for="citing-year">작성 중인 논문의 출판 예정 연도</label>
@@ -276,7 +279,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 1p
   <div class="wrap">
     <div class="sec-head">
       <h2>논문 검색</h2>
-      <p>제목·저자·DOI에서 키워드를 찾습니다. 여러 단어를 넣으면 모두 포함된 논문만 표시됩니다. 왼쪽 체크박스로 고른 논문은 EndNote·RIS·BibTeX 파일로 한 번에 내려받을 수 있습니다.</p>
+      <p>제목·저자·DOI에서 키워드를 찾습니다. 여러 단어를 넣으면 모두 포함된 논문만 표시됩니다. 논문마다 있는 <b>EndNote</b>·<b>BibTeX</b>·<b>RIS</b> 버튼을 누르면 서지파일이 바로 저장됩니다. <b>Zotero</b>를 쓰신다면 브라우저 툴바의 Zotero 아이콘을 눌러 화면에 표시된 논문을 한 번에 담을 수 있습니다(Zotero Connector 설치 필요). 왼쪽 체크박스로 여러 편을 고르면 인용문을 한꺼번에 복사할 수 있습니다.</p>
     </div>
     <div class="searchbox">
       <input id="q" type="search" autocomplete="off" placeholder="예: seismic retrofit, UHPC, machine learning, Kang">
@@ -330,7 +333,7 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 1p
     <div class="apa">
       <div class="lbl">APA 예시</div>
       <code>Chourasia, A., Singhal, S., &amp; Chourasia, A. (2023). Numerical simulation of laterite confined masonry building subjected to quasi-static monotonic lateral loading. <i>Journal of Structural Integrity and Maintenance</i>, 8(1), 1–11. https://doi.org/10.1080/24705314.2022.2142895</code>
-      <p class="note">목록의 <b>인용문 복사</b> 버튼이 이 형식을 자동으로 만들어 줍니다. 체크박스로 여러 편을 고르면 <b>EndNote(.enw)</b>·<b>RIS</b>(Mendeley·Zotero 공통)·<b>BibTeX</b> 파일로 한 번에 내려받아 서지관리 프로그램에 넣을 수 있습니다. 쪽수는 CrossRef에서 가져와 채웠습니다. 2023년까지는 연속 페이지(1–11 형태), 2024년부터는 저널이 연속 페이지 대신 논문번호를 쓰므로 "Article 2549185" 형태로 표기됩니다.</p>
+      <p class="note">목록의 <b>인용문 복사</b> 버튼이 이 형식을 자동으로 만들어 줍니다. 서지관리 프로그램에 넣을 때는 논문별 <b>EndNote(.enw)</b>·<b>BibTeX(.bib)</b>·<b>RIS</b>(Mendeley·Zotero 공통) 버튼을 쓰시면 됩니다. 쪽수는 CrossRef에서 가져와 채웠습니다. 2023년까지는 연속 페이지(1–11 형태), 2024년부터는 저널이 연속 페이지 대신 논문번호를 쓰므로 <code>Article 2549185</code> 형태로 표기됩니다.</p>
     </div>
   </div>
 </section>
@@ -389,7 +392,7 @@ function renderRule(){
   const [a,b]=targetYears();
   document.getElementById("rule-out").innerHTML =
     `→ <span class="y">${a}년</span> · <span class="y">${b}년</span> JSIM 논문을 인용하면 ` +
-    `<b>${state.citing+1}년 6월</b>에 반영됩니다.`;
+    `<b>${state.citing+1}년 6월</b> 발표 IF에 반영됩니다.`;
   document.getElementById("stat-rec").textContent =
     papers.filter(isRec).length + "편";
 }
@@ -600,6 +603,67 @@ function fallback(text, done){
   ta.remove();
 }
 
+/* ---------- 논문별 서지파일 저장 ---------- */
+/* Blob + <a download>는 표준 기능이라 아티팩트 밖에서도 그대로 동작한다.
+   확장자 제한이 없어 .enw·.bib·.ris를 그대로 쓴다. */
+const FORMATS = {
+  enw: {label:"EndNote", ext:"enw", make:p=>enw(p)},
+  bib: {label:"BibTeX",  ext:"bib", make:p=>bibtex(p, new Set())},
+  ris: {label:"RIS",     ext:"ris", make:p=>ris(p)},
+};
+
+/* 서지관리 프로그램에서 찾기 쉽도록 저자·연도·제목 첫 단어를 파일명에 쓴다. */
+function fileBase(p){
+  const who = surname(nameList(p)[0] || "JSIM");
+  const word = p.title.split(/\s+/).find(w=>w.length>3) || "";
+  return (who + p.year + (word ? "_" + word : "")).replace(/[^A-Za-z0-9_-]/g, "") || "JSIM";
+}
+
+function saveBlob(filename, text, btn){
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  const orig = btn.textContent;
+  btn.textContent = "저장됨"; btn.classList.add("done");
+  setTimeout(()=>{ btn.textContent = orig; btn.classList.remove("done"); }, 1400);
+  toast(filename + " 을(를) 저장했습니다");
+}
+
+/* ---------- COinS (Zotero 등 서지관리 확장이 읽는 숨은 메타데이터) ----------
+   논문마다 <span class="Z3988" title="...">를 심으면 Zotero Connector가
+   페이지에서 여러 편을 한 번에 인식한다. 화면에는 보이지 않는다.
+   웹페이지가 Zotero에 직접 써 넣는 길은 보안상 막혀 있어, 이렇게 읽어
+   가게 하는 것이 표준 방식이다. */
+function coins(p){
+  const kv = [
+    ["ctx_ver", "Z39.88-2004"],
+    ["rft_val_fmt", "info:ofi/fmt:kev:mtx:journal"],
+    ["rft.genre", "article"],
+    ["rft.atitle", p.title],
+    ["rft.jtitle", JOURNAL],
+    ["rft.issn", "2470-5314"],
+    ["rft.volume", p.vol],
+    ["rft.issue", p.issue],
+    ["rft.date", p.year],
+  ];
+  if (p.pages){
+    const [sp, ep] = String(p.pages).split(/[-–—]/);
+    kv.push(["rft.pages", p.pages]);
+    if (sp) kv.push(["rft.spage", sp.trim()]);
+    if (ep) kv.push(["rft.epage", ep.trim()]);
+  } else if (p.anum){
+    // 2024년부터는 연속 페이지 대신 논문번호를 쓴다.
+    kv.push(["rft.artnum", p.anum], ["rft.pages", p.anum]);
+  }
+  nameList(p).forEach(n=>kv.push(["rft.au", n]));
+  if (p.doi) kv.push(["rft_id", "info:doi/" + bareDoi(p)]);
+  return kv.filter(([,v]) => v !== null && v !== undefined && v !== "")
+           .map(([k,v]) => k + "=" + encodeURIComponent(String(v))).join("&");
+}
+
 /* ---------- 목록 ---------- */
 const listEl=document.getElementById("list"), countEl=document.getElementById("count"), moreEl=document.getElementById("more");
 function render(){
@@ -623,8 +687,11 @@ function render(){
         <h3 class="title"><a href="${url}" target="_blank" rel="noopener">${highlight(p.title,terms)}</a></h3>
         <p class="authors">${highlight(p.authors,terms)}</p>
       </div>
+      <span class="Z3988" title="${esc(coins(p))}"></span>
       <div class="acts">
         <button class="btn" data-cite="${i}" type="button">인용문 복사</button>
+        ${Object.entries(FORMATS).map(([k,f])=>
+          `<button class="btn" data-dl="${k}" data-i="${i}" type="button">${f.label}</button>`).join("")}
         ${p.doi?`<button class="btn" data-doi="${i}" type="button">DOI</button>`:""}
       </div>
     </article>`;
@@ -633,6 +700,10 @@ function render(){
     copy(apa(slice[+b.dataset.cite]), b, "인용문")));
   listEl.querySelectorAll("[data-doi]").forEach(b=>b.addEventListener("click",()=>
     copy(slice[+b.dataset.doi].doi, b, "DOI")));
+  listEl.querySelectorAll("[data-dl]").forEach(b=>b.addEventListener("click",()=>{
+    const p = slice[+b.dataset.i], f = FORMATS[b.dataset.dl];
+    saveBlob(`${fileBase(p)}.${f.ext}`, f.make(p), b);
+  }));
   listEl.querySelectorAll("[data-pick]").forEach(cb=>cb.addEventListener("change",()=>{
     const id=+cb.dataset.pick;
     cb.checked ? state.sel.add(id) : state.sel.delete(id);
